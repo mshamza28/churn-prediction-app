@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 from joblib import load
 
 # Load the trained Decision Tree model
@@ -16,46 +18,48 @@ def predict_churn(input_data):
     # Reorder columns to match model training
     X_new = X_new[expected_columns]
 
-    # Debugging: Print shape to check
-    print(f"Expected columns: {len(expected_columns)}, Input data columns: {X_new.shape[1]}")
-
-    # Make prediction
+    # Predict churn and probabilities
     prediction = best_model.predict(X_new)[0]
-    return "Churn" if prediction == 1 else "No Churn"
+    probability = best_model.predict_proba(X_new)[0][1]  # Probability of churn
 
-# Streamlit App UI
-st.title("Customer Churn Prediction")
-st.write("Enter customer details to predict churn.")
+    return "Churn" if prediction == 1 else "No Churn", probability
 
-# User Input Fields
-senior_citizen = st.radio("Is the customer a senior citizen?", ["Yes", "No"])
-monthly_charges = st.number_input("Monthly Charges ($)", min_value=0.0, step=1.0)
-total_charges = st.number_input("Total Charges ($)", min_value=0.0, step=1.0)
+# 🎨 Streamlit UI Customization
+st.set_page_config(page_title="Customer Churn Prediction", page_icon="🔮", layout="wide")
 
-gender = st.radio("Gender", ["Female", "Male"])
-partner = st.radio("Has a partner?", ["Yes", "No"])
-dependents = st.radio("Has dependents?", ["Yes", "No"])
+st.title("🔮 Customer Churn Prediction App")
+st.markdown("Use this tool to predict whether a customer will **churn** or **stay**.")
 
-payment_method = st.selectbox("Payment Method", [
+# 📌 Move input fields to the sidebar
+st.sidebar.header("📋 Enter Customer Details")
+senior_citizen = st.sidebar.radio("Is the customer a senior citizen?", ["Yes", "No"])
+monthly_charges = st.sidebar.number_input("💰 Monthly Charges ($)", min_value=0.0, step=1.0)
+total_charges = st.sidebar.number_input("💳 Total Charges ($)", min_value=0.0, step=1.0)
+
+gender = st.sidebar.radio("🧑 Gender", ["Female", "Male"])
+partner = st.sidebar.radio("💑 Has a partner?", ["Yes", "No"])
+dependents = st.sidebar.radio("👶 Has dependents?", ["Yes", "No"])
+
+payment_method = st.sidebar.selectbox("💳 Payment Method", [
     "Bank transfer (automatic)", "Credit card (automatic)",
     "Electronic check", "Mailed check"
 ])
 
-tenure_range = st.selectbox("Tenure Range", [
+tenure_range = st.sidebar.selectbox("📅 Tenure Range", [
     "1-12", "13-24", "25-36", "37-48", "49-60", "61-72"
 ])
 
-contract_type = st.selectbox("Contract Type", ["Month-to-month", "One year", "Two year"])
-device_protection = st.radio("Has Device Protection?", ["Yes", "No", "No internet service"])
-internet_service = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
-multiple_lines = st.selectbox("Multiple Lines", ["No", "No phone service", "Yes"])
-paperless_billing = st.radio("Uses Paperless Billing?", ["Yes", "No"])
-phone_service = st.radio("Has Phone Service?", ["Yes", "No"])
-online_backup = st.selectbox("Online Backup", ["No", "No internet service", "Yes"])
-online_security = st.selectbox("Online Security", ["No", "No internet service", "Yes"])
-tech_support = st.selectbox("Tech Support", ["No", "No internet service", "Yes"])
-streaming_tv = st.selectbox("Streaming TV", ["No", "No internet service", "Yes"])
-streaming_movies = st.selectbox("Streaming Movies", ["No", "No internet service", "Yes"])
+contract_type = st.sidebar.selectbox("📝 Contract Type", ["Month-to-month", "One year", "Two year"])
+device_protection = st.sidebar.radio("🔒 Device Protection", ["Yes", "No", "No internet service"])
+internet_service = st.sidebar.selectbox("🌐 Internet Service", ["DSL", "Fiber optic", "No"])
+multiple_lines = st.sidebar.selectbox("📞 Multiple Lines", ["No", "No phone service", "Yes"])
+paperless_billing = st.sidebar.radio("📄 Uses Paperless Billing?", ["Yes", "No"])
+phone_service = st.sidebar.radio("📱 Has Phone Service?", ["Yes", "No"])
+online_backup = st.sidebar.selectbox("💾 Online Backup", ["No", "No internet service", "Yes"])
+online_security = st.sidebar.selectbox("🔐 Online Security", ["No", "No internet service", "Yes"])
+tech_support = st.sidebar.selectbox("🛠 Tech Support", ["No", "No internet service", "Yes"])
+streaming_tv = st.sidebar.selectbox("📺 Streaming TV", ["No", "No internet service", "Yes"])
+streaming_movies = st.sidebar.selectbox("🎥 Streaming Movies", ["No", "No internet service", "Yes"])
 
 # Convert User Input to Model Features
 input_data = {
@@ -112,6 +116,17 @@ input_data = {
 }
 
 # Predict Button
-if st.button("Predict Churn"):
-    prediction = predict_churn(input_data)
-    st.subheader(f"Prediction: {prediction}")
+if st.sidebar.button("🔮 Predict Churn"):
+    prediction, probability = predict_churn(input_data)
+
+    st.markdown(f"## **Prediction: {'🛑 Churn' if prediction == 'Churn' else '✅ No Churn'}**")
+    st.progress(probability)  # Show probability as progress bar
+    st.write(f"📊 Probability of churn: **{probability:.2%}**")
+
+    # 🎯 Show a chart of contract types
+    contract_types = ["Month-to-month", "One year", "Two year"]
+    contract_counts = [input_data[f"Contract_{t}"] for t in contract_types]
+
+    fig, ax = plt.subplots()
+    ax.pie(contract_counts, labels=contract_types, autopct="%1.1f%%", startangle=90)
+    st.pyplot(fig)
