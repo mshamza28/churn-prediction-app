@@ -27,7 +27,7 @@ def predict_churn(input_data):
 # 🎨 Streamlit UI Customization
 st.set_page_config(page_title="Customer Churn Prediction", page_icon="🔮", layout="wide")
 
-st.title("🔮 Customer Churn Prediction App")
+st.title("🔮 Customer Churn Prediction")
 st.markdown("Use this tool to predict whether a customer will **churn** or **stay**.")
 
 # 📌 Move input fields to the sidebar
@@ -119,7 +119,7 @@ input_data = {
 if st.sidebar.button("🔮 Predict Churn"):
     prediction, probability = predict_churn(input_data)
 
-    st.markdown(f"## **Prediction: {'🛑 Churn' if prediction == 'Churn' else '✅ No Churn'}**")
+    st.markdown(f"## **Prediction: {'🛑 The Customer will Churn' if prediction == 'Churn' else '✅ The Customer will stay'}**")
     if prediction == 'Churn':
         st.progress(probability)  # Show probability as progress bar
         st.write(f"📊 Probability of churn: **{probability:.2%}**")
