@@ -45,7 +45,6 @@ tenure_range = st.selectbox("Tenure Range", [
     "1-12", "13-24", "25-36", "37-48", "49-60", "61-72"
 ])
 
-# Additional Feature Inputs
 contract_type = st.selectbox("Contract Type", ["Month-to-month", "One year", "Two year"])
 device_protection = st.radio("Has Device Protection?", ["Yes", "No", "No internet service"])
 internet_service = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
@@ -79,8 +78,6 @@ input_data = {
     "tenure_range_37-48": tenure_range == "37-48",
     "tenure_range_49-60": tenure_range == "49-60",
     "tenure_range_61-72": tenure_range == "61-72",
-    
-    # Additional Features
     "Contract_Month-to-month": contract_type == "Month-to-month",
     "Contract_One year": contract_type == "One year",
     "Contract_Two year": contract_type == "Two year",
