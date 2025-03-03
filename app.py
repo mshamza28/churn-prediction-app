@@ -122,11 +122,3 @@ if st.sidebar.button("🔮 Predict Churn"):
     st.markdown(f"## **Prediction: {'🛑 Churn' if prediction == 'Churn' else '✅ No Churn'}**")
     st.progress(probability)  # Show probability as progress bar
     st.write(f"📊 Probability of churn: **{probability:.2%}**")
-
-    # 🎯 Show a chart of contract types
-    contract_types = ["Month-to-month", "One year", "Two year"]
-    contract_counts = [input_data[f"Contract_{t}"] for t in contract_types]
-
-    fig, ax = plt.subplots()
-    ax.pie(contract_counts, labels=contract_types, autopct="%1.1f%%", startangle=90)
-    st.pyplot(fig)
