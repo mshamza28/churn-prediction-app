@@ -28,7 +28,7 @@ st.title("Customer Churn Prediction")
 st.write("Enter customer details to predict churn.")
 
 # User Input Fields
-senior_citizen = st.radio("Is the customer a senior citizen?", [0, 1])
+senior_citizen = st.radio("Is the customer a senior citizen?", ["Yes", "No"])
 monthly_charges = st.number_input("Monthly Charges ($)", min_value=0.0, step=1.0)
 total_charges = st.number_input("Total Charges ($)", min_value=0.0, step=1.0)
 
@@ -60,7 +60,7 @@ streaming_movies = st.selectbox("Streaming Movies", ["No", "No internet service"
 
 # Convert User Input to Model Features
 input_data = {
-    "SeniorCitizen": senior_citizen,
+    "SeniorCitizen": 1 if senior_citizen == "Yes" else 0,
     "MonthlyCharges": monthly_charges,
     "TotalCharges": total_charges,
     "gender_Female": gender == "Female",
