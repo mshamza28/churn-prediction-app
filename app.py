@@ -6,7 +6,7 @@ from joblib import load
 model_path = "decision_tree_churn_model.joblib"
 best_model = load(model_path)
 
-# Define expected features for input
+# Define expected feature names (matching training dataset)
 expected_columns = [
     "SeniorCitizen", "MonthlyCharges", "TotalCharges",
     "gender_Female", "gender_Male", "Partner_No", "Partner_Yes",
@@ -20,7 +20,11 @@ expected_columns = [
 def predict_churn(input_data):
     """ Predict churn based on input features. """
     X_new = pd.DataFrame([input_data])
+
+    # Ensure the correct feature order and fill missing columns
     X_new = X_new.reindex(columns=expected_columns, fill_value=0)
+
+    # Make prediction
     prediction = best_model.predict(X_new)[0]
     return "Churn" if prediction == 1 else "No Churn"
 
@@ -29,8 +33,8 @@ st.title("Customer Churn Prediction")
 st.write("Enter customer details to predict churn.")
 
 # User Input Fields
-senior_citizen = st.selectbox("Is the customer a senior citizen?", [0, 1])
-monthly_charges = st.number_input("Monthly Charges ($)", min_value=0.0, max_value=500.0, step=1.0)
+senior_citizen = st.radio("Is the customer a senior citizen?", [0, 1])
+monthly_charges = st.number_input("Monthly Charges ($)", min_value=0.0, step=1.0)
 total_charges = st.number_input("Total Charges ($)", min_value=0.0, step=1.0)
 
 gender = st.radio("Gender", ["Female", "Male"])
