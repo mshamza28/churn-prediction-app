@@ -120,5 +120,6 @@ if st.sidebar.button("🔮 Predict Churn"):
     prediction, probability = predict_churn(input_data)
 
     st.markdown(f"## **Prediction: {'🛑 Churn' if prediction == 'Churn' else '✅ No Churn'}**")
-    st.progress(probability)  # Show probability as progress bar
-    st.write(f"📊 Probability of churn: **{probability:.2%}**")
+    if prediction == 'Churn':
+        st.progress(probability)  # Show probability as progress bar
+        st.write(f"📊 Probability of churn: **{probability:.2%}**")
