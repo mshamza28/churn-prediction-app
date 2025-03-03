@@ -6,14 +6,14 @@ from joblib import load
 model_path = "decision_tree_churn_model.joblib"
 best_model = load(model_path)
 
-# 🔴 **Extract the correct feature order from the model**
+# Extract the correct feature order from the model
 expected_columns = best_model.feature_names_in_.tolist()
 
 def predict_churn(input_data):
     """ Predict churn based on input features. """
     X_new = pd.DataFrame([input_data])
 
-    # 🔴 **Reorder columns to match model training**
+    # Reorder columns to match model training
     X_new = X_new[expected_columns]
 
     # Debugging: Print shape to check
