@@ -16,18 +16,20 @@ expected_columns = [
     "tenure_range_1-12", "tenure_range_13-24", "tenure_range_25-36",
     "tenure_range_37-48", "tenure_range_49-60", "tenure_range_61-72",
     
-    # 🔴 Previously Added Missing Features
+    # 🔴 Previously Missing Features (Now Added)
     "Contract_Month-to-month", "Contract_One year", "Contract_Two year",
     "DeviceProtection_No", "DeviceProtection_No internet service", "DeviceProtection_Yes",
     "InternetService_DSL", "InternetService_Fiber optic", "InternetService_No",
     "MultipleLines_No", "MultipleLines_No phone service", "MultipleLines_Yes",
-
-    # 🔴 Newly Missing Features (Now Added)
     "OnlineBackup_No", "OnlineBackup_No internet service", "OnlineBackup_Yes",
     "OnlineSecurity_No", "OnlineSecurity_No internet service", "OnlineSecurity_Yes",
     "TechSupport_No", "TechSupport_No internet service", "TechSupport_Yes",
     "StreamingTV_No", "StreamingTV_No internet service", "StreamingTV_Yes",
-    "StreamingMovies_No", "StreamingMovies_No internet service", "StreamingMovies_Yes"
+    "StreamingMovies_No", "StreamingMovies_No internet service", "StreamingMovies_Yes",
+
+    # 🔴 Newly Missing Features (Now Added)
+    "PaperlessBilling_No", "PaperlessBilling_Yes",
+    "PhoneService_No", "PhoneService_Yes"
 ]
 
 def predict_churn(input_data):
@@ -37,7 +39,7 @@ def predict_churn(input_data):
     # Ensure all expected columns exist
     X_new = X_new.reindex(columns=expected_columns, fill_value=0)
 
-    # Debugging: Print feature shape to check
+    # Debugging: Print shape to check
     print(f"Expected columns: {len(expected_columns)}, Input data columns: {X_new.shape[1]}")
 
     # Make prediction
@@ -71,6 +73,8 @@ contract_type = st.selectbox("Contract Type", ["Month-to-month", "One year", "Tw
 device_protection = st.radio("Has Device Protection?", ["Yes", "No", "No internet service"])
 internet_service = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
 multiple_lines = st.selectbox("Multiple Lines", ["No", "No phone service", "Yes"])
+paperless_billing = st.radio("Uses Paperless Billing?", ["Yes", "No"])
+phone_service = st.radio("Has Phone Service?", ["Yes", "No"])
 
 # Additional Features (Newly Missing)
 online_backup = st.selectbox("Online Backup", ["No", "No internet service", "Yes"])
@@ -131,7 +135,13 @@ input_data = {
     "StreamingTV_Yes": streaming_tv == "Yes",
     "StreamingMovies_No": streaming_movies == "No",
     "StreamingMovies_No internet service": streaming_movies == "No internet service",
-    "StreamingMovies_Yes": streaming_movies == "Yes"
+    "StreamingMovies_Yes": streaming_movies == "Yes",
+
+    # 🔴 **Latest Missing Features**
+    "PaperlessBilling_No": paperless_billing == "No",
+    "PaperlessBilling_Yes": paperless_billing == "Yes",
+    "PhoneService_No": phone_service == "No",
+    "PhoneService_Yes": phone_service == "Yes"
 }
 
 # Predict Button
