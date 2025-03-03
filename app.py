@@ -6,7 +6,7 @@ from joblib import load
 model_path = "decision_tree_churn_model.joblib"
 best_model = load(model_path)
 
-# Define expected feature names (matching training dataset)
+# Expected feature columns (matching training dataset)
 expected_columns = [
     "SeniorCitizen", "MonthlyCharges", "TotalCharges",
     "gender_Female", "gender_Male", "Partner_No", "Partner_Yes",
@@ -14,15 +14,22 @@ expected_columns = [
     "PaymentMethod_Bank transfer (automatic)", "PaymentMethod_Credit card (automatic)",
     "PaymentMethod_Electronic check", "PaymentMethod_Mailed check",
     "tenure_range_1-12", "tenure_range_13-24", "tenure_range_25-36",
-    "tenure_range_37-48", "tenure_range_49-60", "tenure_range_61-72"
+    "tenure_range_37-48", "tenure_range_49-60", "tenure_range_61-72",
+    
+    # 🔴 **Missing Features (Now Added)**
+    "Contract_Month-to-month", "Contract_One year", "Contract_Two year",
+    "DeviceProtection_No", "DeviceProtection_No internet service", "DeviceProtection_Yes"
 ]
 
 def predict_churn(input_data):
     """ Predict churn based on input features. """
     X_new = pd.DataFrame([input_data])
 
-    # Ensure the correct feature order and fill missing columns
+    # Ensure all expected columns exist
     X_new = X_new.reindex(columns=expected_columns, fill_value=0)
+
+    # Debugging: Print shape to check
+    print(f"Expected columns: {len(expected_columns)}, Input data columns: {X_new.shape[1]}")
 
     # Make prediction
     prediction = best_model.predict(X_new)[0]
@@ -43,10 +50,16 @@ dependents = st.radio("Has dependents?", ["Yes", "No"])
 
 payment_method = st.selectbox("Payment Method", [
     "Bank transfer (automatic)", "Credit card (automatic)",
-    "Electronic check", "Mailed check"])
+    "Electronic check", "Mailed check"
+])
 
 tenure_range = st.selectbox("Tenure Range", [
-    "1-12", "13-24", "25-36", "37-48", "49-60", "61-72"])
+    "1-12", "13-24", "25-36", "37-48", "49-60", "61-72"
+])
+
+# 🔴 **New Inputs for Missing Features**
+contract_type = st.selectbox("Contract Type", ["Month-to-month", "One year", "Two year"])
+device_protection = st.radio("Has Device Protection?", ["Yes", "No", "No internet service"])
 
 # Convert User Input to Model Features
 input_data = {
@@ -68,7 +81,15 @@ input_data = {
     "tenure_range_25-36": tenure_range == "25-36",
     "tenure_range_37-48": tenure_range == "37-48",
     "tenure_range_49-60": tenure_range == "49-60",
-    "tenure_range_61-72": tenure_range == "61-72"
+    "tenure_range_61-72": tenure_range == "61-72",
+    
+    # 🔴 **Newly Added Inputs**
+    "Contract_Month-to-month": contract_type == "Month-to-month",
+    "Contract_One year": contract_type == "One year",
+    "Contract_Two year": contract_type == "Two year",
+    "DeviceProtection_No": device_protection == "No",
+    "DeviceProtection_No internet service": device_protection == "No internet service",
+    "DeviceProtection_Yes": device_protection == "Yes"
 }
 
 # Predict Button
