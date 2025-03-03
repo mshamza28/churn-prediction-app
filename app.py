@@ -16,9 +16,13 @@ expected_columns = [
     "tenure_range_1-12", "tenure_range_13-24", "tenure_range_25-36",
     "tenure_range_37-48", "tenure_range_49-60", "tenure_range_61-72",
     
-    # 🔴 **Missing Features (Now Added)**
+    # 🔴 Previously Missing Features (Now Added)
     "Contract_Month-to-month", "Contract_One year", "Contract_Two year",
-    "DeviceProtection_No", "DeviceProtection_No internet service", "DeviceProtection_Yes"
+    "DeviceProtection_No", "DeviceProtection_No internet service", "DeviceProtection_Yes",
+    
+    # 🔴 Newly Missing Features (Now Added)
+    "InternetService_DSL", "InternetService_Fiber optic", "InternetService_No",
+    "MultipleLines_No", "MultipleLines_No phone service", "MultipleLines_Yes"
 ]
 
 def predict_churn(input_data):
@@ -57,9 +61,11 @@ tenure_range = st.selectbox("Tenure Range", [
     "1-12", "13-24", "25-36", "37-48", "49-60", "61-72"
 ])
 
-# 🔴 **New Inputs for Missing Features**
+# 🔴 **New Inputs for More Missing Features**
 contract_type = st.selectbox("Contract Type", ["Month-to-month", "One year", "Two year"])
 device_protection = st.radio("Has Device Protection?", ["Yes", "No", "No internet service"])
+internet_service = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
+multiple_lines = st.selectbox("Multiple Lines", ["No", "No phone service", "Yes"])
 
 # Convert User Input to Model Features
 input_data = {
@@ -83,13 +89,21 @@ input_data = {
     "tenure_range_49-60": tenure_range == "49-60",
     "tenure_range_61-72": tenure_range == "61-72",
     
-    # 🔴 **Newly Added Inputs**
+    # 🔴 **Previously Added Features**
     "Contract_Month-to-month": contract_type == "Month-to-month",
     "Contract_One year": contract_type == "One year",
     "Contract_Two year": contract_type == "Two year",
     "DeviceProtection_No": device_protection == "No",
     "DeviceProtection_No internet service": device_protection == "No internet service",
-    "DeviceProtection_Yes": device_protection == "Yes"
+    "DeviceProtection_Yes": device_protection == "Yes",
+
+    # 🔴 **Newly Added Features**
+    "InternetService_DSL": internet_service == "DSL",
+    "InternetService_Fiber optic": internet_service == "Fiber optic",
+    "InternetService_No": internet_service == "No",
+    "MultipleLines_No": multiple_lines == "No",
+    "MultipleLines_No phone service": multiple_lines == "No phone service",
+    "MultipleLines_Yes": multiple_lines == "Yes"
 }
 
 # Predict Button
