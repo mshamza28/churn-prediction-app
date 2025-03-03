@@ -6,38 +6,15 @@ from joblib import load
 model_path = "decision_tree_churn_model.joblib"
 best_model = load(model_path)
 
-# Expected feature columns (matching training dataset)
-expected_columns = [
-    "SeniorCitizen", "MonthlyCharges", "TotalCharges",
-    "gender_Female", "gender_Male", "Partner_No", "Partner_Yes",
-    "Dependents_No", "Dependents_Yes",
-    "PaymentMethod_Bank transfer (automatic)", "PaymentMethod_Credit card (automatic)",
-    "PaymentMethod_Electronic check", "PaymentMethod_Mailed check",
-    "tenure_range_1-12", "tenure_range_13-24", "tenure_range_25-36",
-    "tenure_range_37-48", "tenure_range_49-60", "tenure_range_61-72",
-    
-    # 🔴 Previously Missing Features (Now Added)
-    "Contract_Month-to-month", "Contract_One year", "Contract_Two year",
-    "DeviceProtection_No", "DeviceProtection_No internet service", "DeviceProtection_Yes",
-    "InternetService_DSL", "InternetService_Fiber optic", "InternetService_No",
-    "MultipleLines_No", "MultipleLines_No phone service", "MultipleLines_Yes",
-    "OnlineBackup_No", "OnlineBackup_No internet service", "OnlineBackup_Yes",
-    "OnlineSecurity_No", "OnlineSecurity_No internet service", "OnlineSecurity_Yes",
-    "TechSupport_No", "TechSupport_No internet service", "TechSupport_Yes",
-    "StreamingTV_No", "StreamingTV_No internet service", "StreamingTV_Yes",
-    "StreamingMovies_No", "StreamingMovies_No internet service", "StreamingMovies_Yes",
-
-    # 🔴 Newly Missing Features (Now Added)
-    "PaperlessBilling_No", "PaperlessBilling_Yes",
-    "PhoneService_No", "PhoneService_Yes"
-]
+# 🔴 **Extract the correct feature order from the model**
+expected_columns = best_model.feature_names_in_.tolist()
 
 def predict_churn(input_data):
     """ Predict churn based on input features. """
     X_new = pd.DataFrame([input_data])
 
-    # Ensure all expected columns exist
-    X_new = X_new.reindex(columns=expected_columns, fill_value=0)
+    # 🔴 **Reorder columns to match model training**
+    X_new = X_new[expected_columns]
 
     # Debugging: Print shape to check
     print(f"Expected columns: {len(expected_columns)}, Input data columns: {X_new.shape[1]}")
@@ -68,15 +45,13 @@ tenure_range = st.selectbox("Tenure Range", [
     "1-12", "13-24", "25-36", "37-48", "49-60", "61-72"
 ])
 
-# 🔴 **New Inputs for More Missing Features**
+# Additional Feature Inputs
 contract_type = st.selectbox("Contract Type", ["Month-to-month", "One year", "Two year"])
 device_protection = st.radio("Has Device Protection?", ["Yes", "No", "No internet service"])
 internet_service = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
 multiple_lines = st.selectbox("Multiple Lines", ["No", "No phone service", "Yes"])
 paperless_billing = st.radio("Uses Paperless Billing?", ["Yes", "No"])
 phone_service = st.radio("Has Phone Service?", ["Yes", "No"])
-
-# Additional Features (Newly Missing)
 online_backup = st.selectbox("Online Backup", ["No", "No internet service", "Yes"])
 online_security = st.selectbox("Online Security", ["No", "No internet service", "Yes"])
 tech_support = st.selectbox("Tech Support", ["No", "No internet service", "Yes"])
@@ -105,22 +80,19 @@ input_data = {
     "tenure_range_49-60": tenure_range == "49-60",
     "tenure_range_61-72": tenure_range == "61-72",
     
-    # 🔴 **Previously Added Features**
+    # Additional Features
     "Contract_Month-to-month": contract_type == "Month-to-month",
     "Contract_One year": contract_type == "One year",
     "Contract_Two year": contract_type == "Two year",
     "DeviceProtection_No": device_protection == "No",
     "DeviceProtection_No internet service": device_protection == "No internet service",
     "DeviceProtection_Yes": device_protection == "Yes",
-
     "InternetService_DSL": internet_service == "DSL",
     "InternetService_Fiber optic": internet_service == "Fiber optic",
     "InternetService_No": internet_service == "No",
     "MultipleLines_No": multiple_lines == "No",
     "MultipleLines_No phone service": multiple_lines == "No phone service",
     "MultipleLines_Yes": multiple_lines == "Yes",
-
-    # 🔴 **Newly Added Features**
     "OnlineBackup_No": online_backup == "No",
     "OnlineBackup_No internet service": online_backup == "No internet service",
     "OnlineBackup_Yes": online_backup == "Yes",
@@ -136,8 +108,6 @@ input_data = {
     "StreamingMovies_No": streaming_movies == "No",
     "StreamingMovies_No internet service": streaming_movies == "No internet service",
     "StreamingMovies_Yes": streaming_movies == "Yes",
-
-    # 🔴 **Latest Missing Features**
     "PaperlessBilling_No": paperless_billing == "No",
     "PaperlessBilling_Yes": paperless_billing == "Yes",
     "PhoneService_No": phone_service == "No",
